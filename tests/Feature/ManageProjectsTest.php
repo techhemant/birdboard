@@ -35,13 +35,24 @@ class ManageProjectsTest extends TestCase
     }
 
     /** @test */
+    public function guests_cannot_create_project_via_form()
+    {
+        $this->get('/projects/create')->assertRedirect('login');
+    }
+
+    /** @test */
     public function an_authenticated_user_can_create_projects()
     {
+//        $this->withoutExceptionHandling();
+
         $this->actingAs(User::factory()->create());
         $attributes = [
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
         ];
+
+        $this->get('/projects/create')->assertStatus(200);
+
 
         $this->post('/projects', $attributes)->assertRedirect('/projects');
 
