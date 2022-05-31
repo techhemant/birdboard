@@ -1,50 +1,16 @@
 # Problems faced
 
-## Integrating Tailwind CSS utility framework
-
 ### Problem 1: How to install Tailwind CSS framework
 
-#### Step 1: Install TailWind
+https://github.com/laravel-frontend-presets/tailwindcss
 
-```npm install tailwindcss```
-
-#### Step 2: Add Tailwind to your CSS
-
-Add following directives to ```/resources/sass/app.css```. So when you run ```npm run dev```
-it includes Tailwind items to the compiled file in ```public/css/app.css```
+### Problem 2: For Command "mix" not found error
 
 ```
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+npm install laravel-mix@latest
+npm clean-install
 ```
 
-#### Step 3: Add Tailwind config file 
+### Problem 3: To generate full tailwind.config.js
 
-```npx tailwind init```
-
-This adds tailwind.config.js to root which extends its content to .html, .css., .vue files
-
-#### Step 4: Compile your styles with Laraval Mix
-
-Replace all lines in your webpack.mix.js to:
-
-```
-const mix = require('laravel-mix');
-
-const tailwindcss = require('tailwindcss');
-
-mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css')
-    .options({
-        processCssUrls: false,
-        postCss: [tailwindcss('./tailwind.config.js')],
-    });
-```
-
-#### Step 5: Compile
-
-run `npm run dev`
-This will execute `npm run develpment -> npm run mix` from `package.json`
-
-
+`npx tailwindcss init --full`
