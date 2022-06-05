@@ -28,6 +28,13 @@ class ProjectTasksController extends Controller
             return abort(403);
         }
 
+        $task->update(
+            [
+                "body" => request('body'),
+                "completed" => request()->has('completed')
+            ]
+        );
 
+        return redirect($project->path());
     }
 }

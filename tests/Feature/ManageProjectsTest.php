@@ -52,7 +52,10 @@ class ManageProjectsTest extends TestCase
 
         $this->get('/projects/create')->assertStatus(200);
 
-        $this->post('/projects', $attributes)->assertRedirect('/projects');
+        $response = $this->post('/projects', $attributes);
+
+        $project = Project::where($attributes)->first();
+        $response->assertRedirect($project->path());
 
         $this->assertDatabaseHas('projects', $attributes);
 
@@ -66,7 +69,7 @@ class ManageProjectsTest extends TestCase
 
         $project = Project::factory()->create(['owner_id' => auth()->id()]);
 
-        $this->get($project->path())->assertsee($project->title)->assertSee($project->description);
+        $this->get($project->path())->assertsee($project->title);
     }
 
     /** @test */

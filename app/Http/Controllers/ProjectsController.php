@@ -9,6 +9,7 @@ class ProjectsController extends Controller
     public function index()
     {
         $projects = auth()->user()->projects;
+
         return view('projects.index', compact('projects'));
     }
 
@@ -38,6 +39,6 @@ class ProjectsController extends Controller
 
          $project = auth()->user()->projects()->create($attributes);
 
-        return $this->show($project);
+        return redirect($project->path());
     }
 }
