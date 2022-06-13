@@ -19,8 +19,10 @@
                         @method('PATCH')
                         @csrf
                         <div class="card-white mb-3 w-full flex">
-                            <input name="body" class="w-full {{ $task->completed ? 'text-gray-600' : '' }}" value="{{ $task->body }}">
-                            <input name="completed" type="checkbox" onclick="this.form.submit()" {{ $task->completed ? 'checked' : '' }}>
+                            <input name="body" class="w-full {{ $task->completed ? 'text-gray-600' : '' }}"
+                                   value="{{ $task->body }}">
+                            <input name="completed" type="checkbox"
+                                   onclick="this.form.submit()" {{ $task->completed ? 'checked' : '' }}>
                         </div>
                     </form>
                 @endforeach
@@ -34,7 +36,12 @@
             <div class="px-3">
                 <div class="lg:w-full">
                     <h1 class="text-xl text-gray-600 mb-3">General Notes</h1>
-                    <textarea class="card-white w-full" style="height: 200px"> Lorem ipsum.</textarea>
+                    <form action="{{ $project->path() }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <textarea class="card-white w-full" style="height: 200px" name="notes">{{ $project->notes }}</textarea>
+                        <button class="button mt-2" type="submit">Save</button>
+                    </form>
                 </div>
             </div>
         </div>
