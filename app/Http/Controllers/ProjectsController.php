@@ -9,14 +9,17 @@ class ProjectsController extends Controller
     public function index()
     {
         $projects = auth()->user()->projects;
+
         return view('projects.index', compact('projects'));
     }
 
     public function show(Project $project)
     {
-        if (auth()->user()->isNot($project->owner)) {
-            abort(403);
-        }
+        $this->authorize('update', $project);
+
+        //        if (auth()->user()->isNot($project->owner)) {
+//            abort(403);
+//        }
 
         return view('projects.show', compact('project'));
     }
@@ -33,12 +36,23 @@ class ProjectsController extends Controller
              [
                  'title' => 'required',
                  'description' => 'required',
+                 'notes' => 'max:255',
              ]
          );
 
-         auth()->user()->projects()->create($attributes);
+         $project = auth()->user()->projects()->create($attributes);
 
-        //redirected
-        return redirect('/projects');
+        return redirect($project->path());
+    }
+
+    public function update(Project $project)
+    {
+        $this->authorize('update', $project);
+
+        $project->update([
+            'notes' => request('notes')
+        ]);
+
+        return redirect($project->path());
     }
 }

@@ -10,20 +10,38 @@
         </div>
     </div>
 
-    <h1 class="text-xl text-gray-600 pb-3">Tasks</h1>
+    <h1 class="lg:text-xl text-gray-600 pb-3">Tasks</h1>
     <div class="flex -mx-3">
         <div class="w-3/4">
             <div class="lg:w-full px-3 pb-6">
-                <div class="card-white w-full mb-3">Lorem ipsum.</div>
-                <div class="card-white w-full mb-3">Lorem ipsum.</div>
-                <div class="card-white w-full mb-3">Lorem ipsum.</div>
-                <div class="card-white w-full mb-3">Lorem ipsum.</div>
+                @foreach($project->tasks as $task)
+                    <form action="{{ $task->path() }}" method="POST">
+                        @method('PATCH')
+                        @csrf
+                        <div class="card-white mb-3 w-full flex">
+                            <input name="body" class="w-full {{ $task->completed ? 'text-gray-600' : '' }}"
+                                   value="{{ $task->body }}">
+                            <input name="completed" type="checkbox"
+                                   onclick="this.form.submit()" {{ $task->completed ? 'checked' : '' }}>
+                        </div>
+                    </form>
+                @endforeach
+
+                <form action="{{ $project->path() .  '/tasks'}}" method="POST">
+                    @csrf
+                    <input placeholder="Add a new task." class="card-white w-full mb-3" name="body">
+                </form>
             </div>
 
             <div class="px-3">
                 <div class="lg:w-full">
                     <h1 class="text-xl text-gray-600 mb-3">General Notes</h1>
-                    <textarea class="card-white w-full" style="height: 200px"> Lorem ipsum.</textarea>
+                    <form action="{{ $project->path() }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <textarea class="card-white w-full" style="height: 200px" name="notes">{{ $project->notes }}</textarea>
+                        <button class="button mt-2" type="submit">Save</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -35,7 +53,7 @@
                         <a href="{{ $project->path() }}">{{ $project->title }}</a>
                     </h3>
 
-                    <div class="text-gray-500">{{ Str::limit($project->description,200) }}</div>
+                    <div class="text-gray-500">{{ Str::limit($project->description,100) }}</div>
                 </div>
             </div>
         </div>

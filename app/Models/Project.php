@@ -14,11 +14,21 @@ class Project extends Model
 
     public function path(): string
     {
-        return '/project/' . $this->id;
+        return '/projects/' . $this->id;
     }
 
-    public function owner()
+    public function owner(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function tasks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function addTask(string $body): Model
+    {
+        return $this->tasks()->create(compact('body'));
     }
 }

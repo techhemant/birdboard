@@ -43,51 +43,80 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function an_authenticated_user_can_create_projects()
     {
-//        $this->withoutExceptionHandling();
+        $this->login();
 
-        $this->actingAs(User::factory()->create());
         $attributes = [
             'title' => $this->faker->sentence,
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->text(10),
+            'notes' => $this->faker->text(10),
         ];
 
         $this->get('/projects/create')->assertStatus(200);
 
+        $response = $this->post('/projects', $attributes);
 
-        $this->post('/projects', $attributes)->assertRedirect('/projects');
+        $project = Project::where($attributes)->first();
+        $response->assertRedirect($project->path());
 
         $this->assertDatabaseHas('projects', $attributes);
 
-        $this->get('/projects')->assertSee($attributes['title']);
+        $this->get($project->path())
+            ->assertSee($attributes['title'])
+            ->assertSee($attributes['description'])
+            ->assertSee($attributes['notes']);
+    }
+
+    /** @test */
+    public function an_authenticated_user_can_update_a_project()
+    {
+        $this->login();
+
+        $project = auth()->user()->projects()->create(Project::factory()->raw());
+
+        $this->patch($project->path(), [
+            'notes' => 'Changed'
+        ])
+            ->assertRedirect($project->path());
+
+        $this->assertDatabaseHas('projects', ['notes' => 'Changed']);
     }
 
     /** @test */
     public function an_authenticated_user_can_view_a_project()
     {
-        $this->actingAs(User::factory()->create());
-
-        $this->withoutExceptionHandling();
+        $this->login();
 
         $project = Project::factory()->create(['owner_id' => auth()->id()]);
 
-        $this->get($project->path())->assertsee($project->title)->assertSee($project->description);
+        $this->get($project->path())->assertsee($project->title);
     }
 
     /** @test */
     public function an_authenticated_user_cannot_view_project_of_others()
     {
-        $this->actingAs(User::factory()->create());
+        $this->login();
 
         $project = Project::factory()->create();
 
         $this->get($project->path())->assertStatus(403);
     }
 
+    /** @test */
+    public function an_authenticated_user_cannot_update_project_of_others()
+    {
+        $this->login();
+
+        $project = Project::factory()->create();
+
+        $this->patch($project->path(), ['notes' => 'Changed'])->assertStatus(403);
+    }
+
 
     /** @test */
     public function a_project_requires_a_title()
     {
-        $this->actingAs(User::factory()->create());
+        $this->login();
+
         $attributes = Project::factory()->raw(['title' => '']);
 
         $this->post('/projects', $attributes)->assertSessionHasErrors('title');
@@ -96,7 +125,8 @@ class ManageProjectsTest extends TestCase
     /** @test */
     public function a_project_requires_a_description()
     {
-        $this->actingAs(User::factory()->create());
+        $this->login();
+
         $attributes = Project::factory()->raw(['description' => '']);
 
         $this->post('/projects', $attributes)->assertSessionHasErrors('description');
